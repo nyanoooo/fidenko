@@ -16,6 +16,21 @@ const pool = mysql.createPool({
   connectionLimit: 10
 });
 
+app.get('/api/products', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(
+      `SELECT p.id, p.title, p.price, p.stock, c.name AS category
+       FROM products p
+       JOIN categories c ON c.id = p.category_id
+       ORDER BY p.id`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
 app.get('/api/categories', async (req, res) => {
   try {
     const [rows] = await pool.execute(
